@@ -1,0 +1,260 @@
+.section {
+  position: relative;
+  height: 300svh;
+  background: #f7f8f6;
+  color: #142d55;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+}
+
+.aurora {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 68% 12%, #85c5d170, transparent 58%),
+    radial-gradient(ellipse at 14% 35%, #d4eff280, transparent 55%),
+    radial-gradient(ellipse at 98% 85%, #142d5535, transparent 50%),
+    #f7f8f6;
+}
+
+.logo {
+  position: absolute;
+  top: clamp(16px, 3vw, 36px);
+  left: clamp(16px, 3vw, 48px);
+  z-index: 40;
+  width: clamp(145px, 15vw, 210px);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #142d55;
+}
+
+.logo img {
+  display: block;
+  width: 94%;
+  max-width: 100%;
+  height: auto;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.plane {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.product {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(180px, 18vw, 270px);
+  aspect-ratio: 4 / 5;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.productImage {
+  object-fit: contain;
+  user-select: none;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 980px;
+  padding: 90px 24px 60px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.titleBlock {
+  transform: scale(0.7);
+  opacity: 0.25;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+.eyebrow {
+  margin: 0 0 22px;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #2787a4;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-geist-sans, Arial), Helvetica, sans-serif;
+  font-size: clamp(42px, 5.4vw, 88px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.heading span {
+  color: #2787a4;
+}
+
+.description {
+  max-width: 540px;
+  margin: 25px auto 0;
+  font-size: clamp(13px, 1.15vw, 16px);
+  font-weight: 300;
+  line-height: 1.8;
+  color: #596b7d;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 30px;
+  pointer-events: auto;
+}
+
+.actions a {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #36a3bd55;
+  border-radius: 50%;
+  color: #142d55;
+  background: #e5f3f58a;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.actions a:hover {
+  background: #c9e7ed;
+  transform: translateY(-3px);
+}
+
+.actions a:focus-visible,
+.logo:focus-visible {
+  outline: 3px solid #2787a4;
+  outline-offset: 5px;
+}
+
+.actions span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.cue {
+  position: absolute;
+  bottom: 25px;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #607187;
+  pointer-events: none;
+}
+
+.cue span {
+  width: 1px;
+  height: 25px;
+  background: linear-gradient(#36a3bd, transparent);
+}
+
+@media (max-width: 767px) {
+  .scene {
+    perspective: 900px;
+  }
+
+  .product {
+    width: clamp(130px, 38vw, 180px);
+  }
+
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.23em;
+  }
+
+  .heading {
+    font-size: clamp(34px, 8vw, 58px);
+  }
+
+  .logo {
+    height: 52px;
+  }
+
+  .content {
+    padding-inline: 18px;
+  }
+}
+
+@media (max-height: 600px) {
+  .heading {
+    font-size: clamp(28px, 6vh, 48px);
+  }
+
+  .description {
+    margin-top: 12px;
+  }
+
+  .actions {
+    margin-top: 12px;
+  }
+
+  .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .cue {
+    bottom: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: 100svh;
+  }
+
+  .titleBlock {
+    transform: none;
+    opacity: 1;
+  }
+
+  .actions a {
+    transition: none;
+  }
+}

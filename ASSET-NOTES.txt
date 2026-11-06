@@ -1,0 +1,14 @@
+ASSET NOTES
+===========
+
+Brand logo:
+public/images/brand/logo-bungkus.png
+
+Hero products:
+public/images/hero/products/poly-mailer.jpg
+public/images/hero/products/beverage-cup.jpg
+public/images/hero/products/kraft-food-box.jpg
+public/images/hero/products/food-container.jpg
+
+To replace a product image later, keep the same filename and file path. The hero
+component reads the image paths from components/ui/perspective-tunnel-hero.tsx.

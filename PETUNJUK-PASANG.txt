@@ -1,0 +1,77 @@
+PAKET IMPLEMENTASI HERO BUNGKUS INDONESIA
+========================================
+
+Isi paket
+---------
+- components/ui/perspective-tunnel-hero.tsx
+- components/ui/liquid-glass-navbar.tsx
+- components/sections/hero-section.tsx
+- app/page.tsx
+- app/globals.css
+- public/images/brand/logo-bungkus.png
+- public/images/hero/products/*.jpg
+
+Teknologi
+---------
+Next.js 16, React 19, TypeScript, Tailwind CSS 4, dan Framer Motion.
+Semua dependency yang dibutuhkan sudah ada di project Anda. Tidak perlu npm install.
+
+CARA MEMASANG DI WINDOWS
+------------------------
+1. Hentikan server development jika sedang berjalan dengan Ctrl + C.
+2. Buat backup folder project atau minimal file berikut:
+   - app/page.tsx
+   - app/globals.css
+3. Ekstrak ZIP ini.
+4. Salin folder dan file dari hasil ekstrak ke folder project:
+   C:\bungkus_indonesia\my-app
+5. Jika Windows bertanya apakah file app/page.tsx dan app/globals.css akan ditimpa,
+   pilih Replace karena versi baru memang menggantikan halaman starter.
+6. Pastikan struktur berikut ada:
+   components\ui\perspective-tunnel-hero.tsx
+   components\ui\liquid-glass-navbar.tsx
+   components\sections\hero-section.tsx
+   public\images\brand\logo-bungkus.png
+   public\images\hero\products\poly-mailer.jpg
+   public\images\hero\products\beverage-cup.jpg
+   public\images\hero\products\kraft-food-box.jpg
+   public\images\hero\products\food-container.jpg
+7. Jalankan dari terminal project:
+   npm run dev
+8. Buka:
+   http://localhost:3000
+
+PERILAKU HERO
+-------------
+- Layout Center Composition.
+- Headline: "Kemasan yang Menguatkan Identitas Brand Anda."
+- Tunnel 3D menggunakan empat foto produk yang diberikan pengguna.
+- Foto produk menggunakan object-contain agar kemasan tidak terpotong.
+- Pointer parallax aktif pada perangkat desktop.
+- Animasi tunnel mengikuti scroll halaman. Kode tidak memanggil preventDefault()
+  pada wheel, sehingga pengunjung tidak terkunci di Hero.
+- Preferensi reduced-motion dihormati.
+- CTA menggunakan komponen LiquidNavbar dengan WebGL water shader dari source
+  Liquid Glass Navbar yang diberikan pengguna.
+
+CTA SAAT INI
+------------
+- Konsultasi Sekarang -> #kontak (bagian kontak sementara)
+- Jelajahi Produk -> #produk (bagian katalog sementara)
+- Cek Pesananmu -> tombol visual/interaktif placeholder; belum terhubung ke sistem
+  tracking order, database, atau halaman pelacakan.
+
+CATATAN
+-------
+1. Bagian Product Showcase dan Contact pada app/page.tsx masih berupa placeholder
+   agar anchor CTA memiliki tujuan saat diuji. Keduanya akan diganti dengan section
+   final pada tahap berikutnya.
+2. Intro Liquid Glass Logo Reveal dan navbar utama belum diintegrasikan dalam paket
+   ini. Paket ini hanya menyelesaikan Hero dan CTA Liquid Glass sesuai tahap kerja.
+3. Logo PNG yang disertakan adalah versi putih transparan dari file yang Anda kirim.
+   Cocok untuk intro berlatar gelap; untuk navbar berlatar terang nanti kita dapat
+   siapkan versi navy/cyan.
+4. Foto produk disalin apa adanya dari file yang Anda unggah. Belum dilakukan
+   retouching atau penghapusan elemen kilau di sudut foto.
+5. Jika muncul error setelah pemasangan, hentikan server dan kirimkan seluruh pesan
+   error terminal beserta screenshot browser. Jangan menghapus folder atau dependency.
