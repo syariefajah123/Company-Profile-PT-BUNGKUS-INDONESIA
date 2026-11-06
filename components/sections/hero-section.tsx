@@ -11,6 +11,8 @@ import styles from "./hero-section.module.css";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+const TAGLINE = "Solusi kemasan untuk bisnis.";
+
 const PRODUCTS = [
   {
     file: "produk-2.png",
@@ -69,17 +71,17 @@ export default function HeroSection() {
 
       if (!section) return;
 
-      const stage =
-        section.querySelector<HTMLElement>("[data-stage]")!;
+      const stage = section.querySelector<HTMLElement>("[data-stage]");
+      const title = section.querySelector<HTMLElement>("[data-title]");
+      const cue = section.querySelector<HTMLElement>("[data-cue]");
+      const cta = section.querySelector<HTMLElement>("[data-cta]");
 
-      const title =
-        section.querySelector<HTMLElement>("[data-title]")!;
+      if (!stage || !title || !cue || !cta) return;
 
-      const cue =
-        section.querySelector<HTMLElement>("[data-cue]")!;
-
-      const cta =
-        section.querySelector<HTMLElement>("[data-cta]")!;
+      const taglineChars = gsap.utils.toArray<HTMLElement>(
+        "[data-tagline-char]",
+        section,
+      );
 
       const products = gsap.utils.toArray<HTMLElement>(
         "[data-product]",
@@ -103,44 +105,57 @@ export default function HeroSection() {
           const { reduce, mobile } = context.conditions!;
 
           if (reduce) {
-            gsap.set(title, {
-              scale: 1,
-              opacity: 1,
+            gsap.set(title, { scale: 1, opacity: 1 });
+            gsap.set(taglineChars, {
+              autoAlpha: 1,
+              y: 0,
+              rotateX: 0,
             });
-
-            gsap.set(products, {
-              autoAlpha: 0,
-            });
-
+            gsap.set(products, { autoAlpha: 0 });
             return;
           }
 
-          const farZ = mobile ? -1200 : -1700;
-          const nearZ = mobile ? 350 : 500;
+          // AnimatedText-style entrance for the tagline.
+          gsap.fromTo(
+            taglineChars,
+            {
+              autoAlpha: 0,
+              y: 12,
+              rotateX: -35,
+              transformOrigin: "50% 100%",
+            },
+            {
+              autoAlpha: 1,
+              y: 0,
+              rotateX: 0,
+              duration: 0.55,
+              stagger: 0.022,
+              delay: 0.18,
+              ease: "power3.out",
+            },
+          );
 
-          // Posisi menyebar mengikuti pola referensi.
+          const farZ = mobile ? -1050 : -1550;
+          const nearZ = mobile ? 280 : 430;
+
+          // Keep the product composition on the right on desktop.
+          // On mobile, distribute it around the center after the
+          // headline has faded out.
           const setPositions = () => {
-            const { width, height } =
-              stage.getBoundingClientRect();
+            const { width, height } = stage.getBoundingClientRect();
 
             products.forEach((product, index) => {
-              const angle =
-                index * 137.5 * (Math.PI / 180);
-
-              const radiusX =
-                width * (0.28 + (index % 3) * 0.08);
-
-              const radiusY =
-                height * (0.26 + (index % 2) * 0.09);
-
+              const angle = index * 137.5 * (Math.PI / 180);
+              const radiusX = width * (mobile ? 0.27 : 0.17);
+              const centerX = mobile ? 0 : width * 0.245;
+              const radiusY = height * (mobile ? 0.25 : 0.245);
               const rotation =
-                (index % 2 === 0 ? 1 : -1) *
-                (3 + (index % 5) * 2);
+                (index % 2 === 0 ? 1 : -1) * (4 + (index % 4) * 1.5);
 
               gsap.set(product, {
                 xPercent: -50,
                 yPercent: -50,
-                x: Math.cos(angle) * radiusX,
+                x: centerX + Math.cos(angle) * radiusX,
                 y: Math.sin(angle) * radiusY,
                 rotation,
               });
@@ -149,15 +164,14 @@ export default function HeroSection() {
 
           setPositions();
 
-          // Semua produk tersembunyi sebelum scroll.
           gsap.set(products, {
             z: farZ,
             autoAlpha: 0,
           });
 
           gsap.set(title, {
-            scale: 0.7,
-            opacity: 0.25,
+            scale: 1,
+            opacity: 1,
           });
 
           const timeline = gsap.timeline({
@@ -174,39 +188,32 @@ export default function HeroSection() {
             },
           });
 
-          // Animasi teks mengikuti nilai pada referensi.
+          // The headline remains clear in the first viewport,
+          // then gently scales away to reveal the product scene.
           timeline
             .to(
               title,
               {
-                scale: 1,
-                duration: 0.5,
+                scale: 1.08,
+                duration: 0.46,
               },
               0,
             )
             .to(
               title,
               {
-                scale: 1.35,
-                duration: 0.5,
+                scale: 1.2,
+                duration: 0.36,
               },
-              0.5,
-            )
-            .to(
-              title,
-              {
-                opacity: 1,
-                duration: 0.12,
-              },
-              0,
+              0.46,
             )
             .to(
               title,
               {
                 opacity: 0,
-                duration: 0.15,
+                duration: 0.18,
               },
-              0.85,
+              0.78,
             )
             .to(
               cue,
@@ -220,17 +227,15 @@ export default function HeroSection() {
               cta,
               {
                 autoAlpha: 0,
-                y: -18,
-                duration: 0.22,
+                y: -16,
+                duration: 0.2,
               },
-              0.06,
+              0.08,
             );
 
-          // Produk muncul bergantian dari kedalaman.
+          // Products travel forward from depth in a staggered sequence.
           products.forEach((product, index) => {
-            const start =
-              (index / products.length) * 0.45;
-
+            const start = (index / products.length) * 0.43;
             const duration = 0.55;
 
             timeline
@@ -260,8 +265,7 @@ export default function HeroSection() {
               );
           });
 
-          // Parallax memakai pembungkus terpisah agar
-          // tidak menimpa transformasi animasi tunnel.
+          // Pointer parallax is isolated from the 3D product transforms.
           const setters = planes.map((plane) => ({
             x: gsap.quickTo(plane, "x", {
               duration: 0.65,
@@ -273,29 +277,14 @@ export default function HeroSection() {
             }),
           }));
 
-          const handlePointerMove = (
-            event: PointerEvent,
-          ) => {
-            if (
-              mobile ||
-              event.pointerType === "touch"
-            ) {
-              return;
-            }
+          const handlePointerMove = (event: PointerEvent) => {
+            if (mobile || event.pointerType === "touch") return;
 
             const rect = stage.getBoundingClientRect();
-
             const x =
-              ((event.clientX - rect.left) /
-                rect.width -
-                0.5) *
-              -90;
-
+              ((event.clientX - rect.left) / rect.width - 0.5) * -72;
             const y =
-              ((event.clientY - rect.top) /
-                rect.height -
-                0.5) *
-              -90;
+              ((event.clientY - rect.top) / rect.height - 0.5) * -72;
 
             setters.forEach((setter) => {
               setter.x(x);
@@ -310,26 +299,12 @@ export default function HeroSection() {
             });
           };
 
-          stage.addEventListener(
-            "pointermove",
-            handlePointerMove,
-          );
-
-          stage.addEventListener(
-            "pointerleave",
-            resetPointer,
-          );
+          stage.addEventListener("pointermove", handlePointerMove);
+          stage.addEventListener("pointerleave", resetPointer);
 
           return () => {
-            stage.removeEventListener(
-              "pointermove",
-              handlePointerMove,
-            );
-
-            stage.removeEventListener(
-              "pointerleave",
-              resetPointer,
-            );
+            stage.removeEventListener("pointermove", handlePointerMove);
+            stage.removeEventListener("pointerleave", resetPointer);
           };
         },
       );
@@ -350,12 +325,9 @@ export default function HeroSection() {
         aria-label="Hero Bungkus Indonesia"
       >
         <div data-stage className={styles.stage}>
-          <div
-            className={styles.aurora}
-            aria-hidden="true"
-          />
+          <div className={styles.aurora} aria-hidden="true" />
 
-          {/* Logo perusahaan */}
+          {/* Transparent brand mark on the light hero background. */}
           <a
             href="#beranda"
             className={styles.logo}
@@ -370,21 +342,15 @@ export default function HeroSection() {
             />
           </a>
 
-          {/* Scene produk */}
-          <div
-            className={styles.scene}
-            aria-hidden="true"
-          >
+          {/* 3D product composition */}
+          <div className={styles.scene} aria-hidden="true">
             {PRODUCTS.map((product) => (
               <div
                 key={product.file}
                 data-parallax
                 className={styles.plane}
               >
-                <div
-                  data-product
-                  className={styles.product}
-                >
+                <div data-product className={styles.product}>
                   <Image
                     src={`/images/hero/products/${product.file}`}
                     alt=""
@@ -398,14 +364,17 @@ export default function HeroSection() {
             ))}
           </div>
 
-          {/* Judul dan deskripsi */}
           <div className={styles.content}>
-            <div
-              data-title
-              className={styles.titleBlock}
-            >
+            <div data-title className={styles.titleBlock}>
               <p className={styles.eyebrow}>
-                Solusi Kemasan untuk Bisnis
+                <span className="sr-only">{TAGLINE}</span>
+                <span className={styles.taglineVisual} aria-hidden="true">
+                  {Array.from(TAGLINE).map((character, index) => (
+                    <span key={index} data-tagline-char>
+                      {character === " " ? "\u00A0" : character}
+                    </span>
+                  ))}
+                </span>
               </p>
 
               <h1 className={styles.heading}>
@@ -417,13 +386,11 @@ export default function HeroSection() {
               </h1>
 
               <p className={styles.description}>
-                Kemasan untuk produk makanan, minuman,
-                dan pengiriman yang dirancang mengikuti
-                kebutuhan bisnis Anda.
+                Kemasan untuk produk makanan, minuman, dan pengiriman yang
+                dirancang mengikuti kebutuhan bisnis Anda.
               </p>
             </div>
 
-            {/* Tombol aksi */}
             <nav
               data-cta
               className={styles.actions}
@@ -437,7 +404,7 @@ export default function HeroSection() {
                   title={label}
                 >
                   <Icon
-                    size={21}
+                    size={22}
                     strokeWidth={1.8}
                     aria-hidden="true"
                   />
@@ -469,8 +436,7 @@ export default function HeroSection() {
           </h2>
 
           <p className="mt-4 text-sm leading-7 text-[#607187] sm:text-base">
-            Katalog produk Bungkus Indonesia akan
-            ditampilkan di bagian ini.
+            Katalog produk Bungkus Indonesia akan ditampilkan di bagian ini.
           </p>
         </div>
       </section>
@@ -490,8 +456,8 @@ export default function HeroSection() {
           </h2>
 
           <p className="mt-4 text-sm leading-7 text-white/70">
-            Tim Bungkus Indonesia siap membantu
-            membahas kebutuhan kemasan bisnis Anda.
+            Tim Bungkus Indonesia siap membantu membahas kebutuhan kemasan
+            bisnis Anda.
           </p>
         </div>
       </section>
@@ -511,8 +477,8 @@ export default function HeroSection() {
           </h2>
 
           <p className="mt-4 text-sm leading-7 text-[#607187]">
-            Fitur pelacakan pesanan akan diaktifkan
-            setelah sistem tracking tersedia.
+            Fitur pelacakan pesanan akan diaktifkan setelah sistem tracking
+            tersedia.
           </p>
         </div>
       </section>
