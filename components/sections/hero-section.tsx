@@ -1624,6 +1624,242 @@ function CompanyStatistics() {
     </section>
   );
 }
+
+
+function ProductShowcase() {
+  const outerRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const wrappersRef = useRef<(HTMLDivElement | null)[]>([]);
+  const visualsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  useGSAP(
+    () => {
+      const outer = outerRef.current;
+      const stage = stageRef.current;
+      const track = trackRef.current;
+
+      if (!outer || !stage || !track) return;
+
+      const getTravel = () =>
+        Math.max(track.scrollWidth - window.innerWidth, 0);
+
+      const updateHeight = () => {
+        outer.style.height = `${
+          getTravel() + window.innerHeight
+        }px`;
+      };
+
+      updateHeight();
+
+      const resizeObserver =
+        typeof ResizeObserver !== "undefined"
+          ? new ResizeObserver(() => {
+              updateHeight();
+              ScrollTrigger.refresh();
+            })
+          : null;
+
+      resizeObserver?.observe(track);
+
+      const handleResize = () => {
+        updateHeight();
+        ScrollTrigger.refresh();
+      };
+
+      window.addEventListener("resize", handleResize, {
+        passive: true,
+      });
+
+      const media = gsap.matchMedia();
+
+      media.add(
+        {
+          reduce: "(prefers-reduced-motion: reduce)",
+          mobile: "(max-width: 639px)",
+          tablet:
+            "(min-width: 640px) and (max-width: 1024px)",
+          desktop: "(min-width: 1025px)",
+        },
+        (context) => {
+          const { reduce, mobile, tablet } =
+            context.conditions as {
+              reduce: boolean;
+              mobile: boolean;
+              tablet: boolean;
+              desktop: boolean;
+            };
+
+          const rotationScale = reduce ? 0.15 : 1;
+
+          const step =
+            (mobile ? 2 : tablet ? 6 : 10) * 1.2;
+
+          const rotateIn =
+            (mobile ? -60 : tablet ? -80 : -100) *
+            rotationScale *
+            1.1;
+
+          const rotateOut =
+            (mobile ? 50 : tablet ? 65 : 80) *
+            rotationScale *
+            1.1;
+
+          gsap.set(stage, {
+            perspective: reduce ? "4800px" : "1000px",
+          });
+
+          const horizontalTween = gsap.to(track, {
+            x: () => -getTravel(),
+            ease: "none",
+            scrollTrigger: {
+              trigger: outer,
+              start: "top top",
+              end: () => `+=${getTravel()}`,
+              scrub: reduce ? true : 1,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          visualsRef.current.forEach((visual, index) => {
+            const wrapper = wrappersRef.current[index];
+
+            if (!visual || !wrapper) return;
+
+            const total = PRODUCTS.length;
+            const mid = Math.floor(total / 2);
+
+            let offset: number;
+
+            if (index < mid) {
+              offset = -((mid - index) * step);
+            } else {
+              offset = (index - mid + 1) * step;
+            }
+
+            const rotateXValue =
+              (offset < 0 ? 5 : -5) * rotationScale;
+
+            const timeline = gsap.timeline({
+              scrollTrigger: {
+                trigger: wrapper,
+                containerAnimation: horizontalTween,
+                start: "left 100%",
+                end: "right 0%",
+                scrub: true,
+              },
+            });
+
+            timeline
+              .fromTo(
+                visual,
+                {
+                  rotateY: rotateIn,
+                  rotateX: rotateXValue,
+                  opacity: 0.8,
+                  y: `${offset}vh`,
+                },
+                {
+                  rotateY: 0,
+                  rotateX: 0,
+                  opacity: 1,
+                  y: 0,
+                  ease: "none",
+                }
+              )
+              .to(visual, {
+                rotateY: rotateOut,
+                opacity: 0.9,
+                y: `${-offset}vh`,
+                ease: "none",
+              });
+          });
+
+          ScrollTrigger.refresh();
+        }
+      );
+
+      return () => {
+        media.revert();
+        resizeObserver?.disconnect();
+
+        window.removeEventListener(
+          "resize",
+          handleResize
+        );
+      };
+    },
+    {
+      scope: outerRef,
+    }
+  );
+
+  return (
+    <section
+      ref={outerRef}
+      id="produk"
+      className={styles.productShowcase}
+      aria-labelledby="product-showcase-heading"
+    >
+      <div
+        ref={stageRef}
+        className={styles.productShowcaseStage}
+      >
+        <header className={styles.productShowcaseHeader}>
+          <h2
+            id="product-showcase-heading"
+            className={styles.productShowcaseHeading}
+          >
+            <span>Temukan kemasan</span>
+            <em>untuk setiap cerita.</em>
+          </h2>
+
+          <p className={styles.productShowcaseDescription}>
+            Jelajahi pilihan kemasan yang dirancang untuk
+            mendukung produk dan karakter brand Anda.
+          </p>
+        </header>
+
+        <div
+          ref={trackRef}
+          className={styles.productShowcaseTrack}
+          role="list"
+          aria-label="Koleksi produk kemasan"
+        >
+          {PRODUCTS.map((product, index) => (
+            <div
+              key={product.file}
+              ref={(element) => {
+                wrappersRef.current[index] = element;
+              }}
+              className={styles.productShowcaseItem}
+              role="listitem"
+            >
+              <div
+                ref={(element) => {
+                  visualsRef.current[index] = element;
+                }}
+                className={styles.productShowcaseVisual}
+              >
+                <Image
+                  src={`/images/hero/products/${product.file}`}
+                  alt={product.title}
+                  fill
+                  sizes="(max-width: 639px) 75vw, (max-width: 1024px) 55vw, 38vw"
+                  draggable={false}
+                  className={styles.productShowcaseImage}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -2085,8 +2321,9 @@ export default function HeroSection() {
           </div>
         </section>
 
-        <BrandIntroduction />
-<CompanyStatistics /> 
+<BrandIntroduction />
+<CompanyStatistics />
+<ProductShowcase />
       </div>
     </div>
   );
